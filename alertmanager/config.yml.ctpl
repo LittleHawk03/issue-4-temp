@@ -1,0 +1,77 @@
+
+inhibit_rules:
+  - target_match:
+      severity: "warning"
+    source_match:
+      severity: "critical"
+    # Apply inhibition if the alertname and instance are the same.
+    equal: ["alertname", "instance"]
+
+route:
+  receiver: "all"
+  group_interval: 30s
+  repeat_interval: 30s
+
+  routes:
+    - match:
+        alertname: high_memory_load
+      receiver: "telegram"
+      repeat_interval: {{ or (env "REPEAT_INTERVAL") "1m" }}
+      continue: true
+
+    - match:
+        alertname: high_cpu_load
+      receiver: "email"
+      repeat_interval: {{ or (env "REPEAT_INTERVAL") "1m" }}
+      continue: true
+
+    - match:
+        alertname: high_storage_load
+      receiver: "slack"
+      repeat_interval: {{ or (env "REPEAT_INTERVAL") "1m" }}
+      continue: true
+
+receivers:
+  - name: "all"
+    slack_configs:
+      - send_resolved: true
+        text: "{{ .CommonAnnotations.description }}"
+        username: "Prometheus"
+        channel: "#test"
+        api_url: {{ (env "INCOMMING_WEBHOOK") }}
+    webhook_configs:
+      - url: {{ (env "TELE_WEBHOOK") }}
+        http_config:
+    email_configs:
+      - to: {{ (env "EMAIL_FIELD") }}
+        from: 'goldf55f@gmail.com'
+        smarthost: 'smtp.gmail.com:587'
+        auth_username: 'goldf55f@gmail.com'
+        auth_password: 'cbpamuevasnbbnrb'
+    
+
+  - name: "slack"
+    slack_configs:
+      - send_resolved: true
+        text: "{{ .CommonAnnotations.description }}"
+        username: "Prometheus"
+        channel: "#test"
+        api_url: {{ (env "INCOMMING_WEBHOOK") }}
+
+  - name: "telegram"
+    webhook_configs:
+      - url: {{ (env "TELE_WEBHOOK") }}
+        http_config:
+
+
+  - name: "email"
+    email_configs:
+      - to: {{ (env "EMAIL_FIELD") }}
+        from: 'goldf55f@gmail.com'
+        smarthost: 'smtp.gmail.com:587'
+        auth_username: 'goldf55f@gmail.com'
+        auth_password: 'cbpamuevasnbbnrb'
+
+
+  
+
