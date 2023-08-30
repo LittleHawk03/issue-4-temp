@@ -58,6 +58,7 @@ services:
       - TELE_WEBHOOK=https://telepush.dev/api/inlets/alertmanager/008a95
       - EMAIL_FIELD=manhduc030402@gmail.com
     network_mode: host
+
     depends_on:
       - sms
     

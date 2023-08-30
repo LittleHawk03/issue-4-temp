@@ -1,0 +1,64 @@
+inhibit_rules:
+  - target_match:
+      severity: "warning"
+    source_match:
+      severity: "critical"
+    equal: ["alertname", "instance"]
+
+route:
+  group_interval: 30s
+  repeat_interval: 30s
+
+routes:
+  {{ range $receiver, $configs := key "alertmanager/config" }}
+  {{ if $receiver "slack" }}
+  - match:
+      alertname: {{ index $configs "alertname" }}
+    receiver: "{{ $receiver }}"
+    repeat_interval: 1m
+    continue: true
+  {{ else if eq $receiver "webhook" }}
+  - match:
+      alertname: {{ index $configs "alertname" }}
+    receiver: "{{ $receiver }}"
+    repeat_interval: 1m
+    continue: true
+  {{ else if eq $receiver "email" }}
+  - match:
+      alertname: {{ index $configs "alertname" }}
+    receiver: "{{ $receiver }}"
+    repeat_interval: 1m
+    continue: true
+  {{ end }}
+  {{ end }}
+
+receivers:
+  - name: "all"
+    webhook_configs:
+      - url: '{{ key "alertmanager/config/webhook/url/" }}'
+        http_config:
+
+{{ range $receiver, $configs := key "alertmanager/config" }}
+{{ if $receiver "slack/config" }}
+  - name: "{{ $receiver }}"
+    slack_configs:
+      - send_resolved: true
+        text: "{{ index $configs "alertname" }}"
+        username: "Prometheus"
+        channel: "{{ index $configs "channel" }}"
+        api_url: "{{ index $configs "api_url" }}"
+{{ else if eq $receiver "webhook" }}
+  - name: "{{ $receiver }}"
+    webhook_configs:
+      - url: '{{ key "alertmanager/config/webhook_url" }}'
+        http_config:
+{{ else if eq $receiver "email" }}
+  - name: "{{ $receiver }}"
+    email_configs:
+      - to: '{{ key "alertmanager/config/email/mail" }}'
+        from: 'goldf55f@gmail.com'
+        smarthost: 'smtp.gmail.com:587'
+        auth_username: 'goldf55f@gmail.com'
+        auth_password: 'cbpamuevasnbbnrb'
+{{ end }}
+{{ end }}
