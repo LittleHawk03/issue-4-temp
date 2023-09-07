@@ -1,0 +1,57 @@
+global:
+    # The smarthost and SMTP sender used for mail notifications.
+    smtp_smarthost: ''
+    smtp_from: 'cloud@viettel.com.vn'
+    smtp_auth_username: ''
+    smtp_auth_identity: ''
+    smtp_auth_password: '88888888888888'
+    smtp_require_tls: false
+
+inhibit_rules:
+    - target_match:
+    severity: "warning"
+    source_match:
+    severity: "critical"
+    # Apply inhibition if the alertname and instance are the same.
+    equal: ["alertname", "instance"]
+
+route:
+    repeat_interval: 2h
+    group_by: ['alertname']
+    receiver: default
+    group_wait: 60s
+    group_interval: 5m
+
+routes:
+    {{ range $user_id, $pairs := tree "users/" | explode }}
+    - match:
+        user_id: {{ $user_id }}
+    receiver: '{{ $user_id }}'
+    repeat_interval: 1h
+    {{ end }}
+
+receivers:
+    - name: default
+
+    {{ range $user_id, $pairs := tree "users/" | explode }}
+    - name: '{{ $user_id }}'
+        email_configs:
+        - to: '{{ range $alarm_id, $pairs := tree ($user_id | printf "users/%s/alarms/") | explode -}}
+                    {{ range ls ($alarm_id | printf "users/%s/alarms/%s" $user_id ) -}}
+                        {{if eq .Key "receiver"}}
+                            {{ scratch.Set .Key .Value }}
+                        {{end}}
+                    {{end}}
+                {{end}}
+                {{scratch.Get "receiver"}}'
+        send_resolved: true
+        text: "CommonAnnotations.description "
+        tls_config:
+        insecure_skip_verify: true
+        html: '{{ `{{ template "email.viettel.html" . }}` }}'
+        headers:
+        subject: "CMP Alert"
+    {{end}}
+
+templates:
+- '/etc/alertmanager/template/viettel_email.tmpl'

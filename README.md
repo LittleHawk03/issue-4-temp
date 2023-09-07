@@ -355,8 +355,129 @@ như ta thấy các field đã được dynamic đầy đủ
 
 Vấn đề em đang gặp phải em muốn thực hiện các biểu thức logic trong file template tuy nhiên thì nó đang bế tắc anh xem qua hộ em với ạ
 
+## COMMENT 3
+
+EM viết lại file template mới ạ
+
+
+```yaml
+  global:
+  # The smarthost and SMTP sender used for mail notifications.
+  smtp_smarthost: 'smtp.gmail.com:587'
+  smtp_from: 'goldf55f@gmail.com'
+  smtp_auth_username: 'goldf55f@gmail.com'
+  # smtp_auth_identity: ''
+  smtp_auth_password: 'cbpamuevasnbbnrb'
+  # smtp_require_tls: false
+
+inhibit_rules:
+- target_match:
+    severity: "warning"
+  source_match:
+    severity: "critical"
+  # Apply inhibition if the alertname and instance are the same.
+  equal: ["alertname", "instance"]
+
+route:
+  repeat_interval: 2h
+  group_by: ['alertname']
+  receiver: default
+  group_wait: 60s
+  group_interval: 5m
+
+  routes:
+{{ range $user_id, $pairs := tree "users/" | explode }}
+  {{ range $alarm_type, $pairs := tree ($user_id | printf "users/%s/alarms/") | explode}}
+    {{ range $alarm_id , $pairs := tree ($alarm_type | printf "users/%s/alarms/%s" $user_id) | explode}}
+  - match:
+      user_id: {{ $user_id }}
+    receiver: '{{ $user_id }} - {{ $alarm_type }} - {{ $alarm_id }}'
+    repeat_interval: 1h
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+receivers:
+  - name: default
+
+{{ range $user_id, $pairs := tree "users/" | explode }}
+  {{ range $alarm_type, $pairs := tree ($user_id | printf "users/%s/alarms/") | explode}}
+    {{ range $alarm_id , $pairs := tree ($alarm_type | printf "users/%s/alarms/%s/" $user_id) | explode}}
+        {{if eq $alarm_type "email" }}
+
+  - name: '{{ $user_id }} - {{ $alarm_type }} - {{ $alarm_id }}'
+    email_configs:
+      - to: '{{ range ls ($alarm_id | printf "users/%s/alarms/email/%s" $user_id ) -}}{{if eq .Key "receiver"}}{{ scratch.Set .Key .Value }}{{end}}{{end}}{{scratch.Get "receiver"}}'
+        send_resolved: true
+        text: "CommonAnnotations.description "
+        tls_config:
+          insecure_skip_verify: true
+        # html: '{{ `{{ template "email.viettel.html" . }}` }}'
+        headers:
+          subject: "CMP Alert"
+
+        {{ else if eq $alarm_type "slack"}}
+        
+  - name: '{{ $user_id }} - {{ $alarm_type }} - {{ $alarm_id }}'
+    slack_configs:
+      - send_resolved: true
+        text: "CommonAnnotations.description"
+        username: '{{ range ls ($alarm_id | printf "users/%s/alarms/slack/%s" $user_id ) -}}{{if eq .Key "username"}}{{ scratch.Set .Key .Value }}{{end}}{{end}}{{scratch.Get "username"}}'
+        channel: '{{ range ls ($alarm_id | printf "users/%s/alarms/slack/%s" $user_id ) -}}{{if eq .Key "channel"}}{{ scratch.Set .Key .Value }}{{end}}{{end}}{{scratch.Get "channel"}}'
+        api_url: '{{ range ls ($alarm_id | printf "users/%s/alarms/slack/%s" $user_id ) -}}{{if eq .Key "api_url"}}{{ scratch.Set .Key .Value }}{{end}}{{end}}{{scratch.Get "api_url"}}'
+        
+        {{ else if eq $alarm_type "telegram"}}
+
+  - name: '{{ $user_id }} - {{ $alarm_type }} - {{ $alarm_id }}'
+    webhook_configs:
+      - url: '{{ range ls ($alarm_id | printf "users/%s/alarms/telegram/%s" $user_id ) -}}{{if eq .Key "tele_webhook"}}{{ scratch.Set .Key .Value }}{{end}}{{end}}{{scratch.Get "tele_webhook"}}'
+        http_config:
+
+        {{ else if $alarm_type "webhook" }}
+
+  - name: '{{ $user_id }} - {{ $alarm_type }} - {{ $alarm_id }}'
+    webhook_configs:
+      - url: '{{ range ls ($alarm_id | printf "users/%s/alarms/webhook/%s" $user_id ) -}}{{if eq .Key "url"}}{{ scratch.Set .Key .Value }}{{end}}{{end}}{{scratch.Get "url"}}'
+        http_config:
+
+        {{ else if $alarm_type "sms" }}
+
+  - name : '{{ $user_id }} - {{ $alarm_type }} - {{ $alarm_id }}'
+  
+        {{ end }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+ 
+templates:
+- '/etc/alertmanager/template/viettel_email.tmpl'
+
+
+```
+
+bây giờ các lệnh put sẽ là 
+
+
+```sh
+  consul kv put /users/user_id/alarms/email/alarm_id/receiver
+  # slack
+  consul kv put /users/user_id/alarms/slack/alarm_id/username
+  consul kv put /users/user_id/alarms/slack/alarm_id/channel
+  consul kv put /users/user_id/alarms/slack/alarm_id/api_url
+  #telegram
+  consul kv put /users/user_id/alarms/telegram/alarm_id/tele_webhook 
+  # webhook
+  consul kv put /users/user_id/alarms/webhook/alarm_id/url
+  # sms
+  consul kv put /users/user_id/alarms/email/alarm_id/
+
+
+
+
 ```
 
 
+```
 
 ```
