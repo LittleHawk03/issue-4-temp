@@ -17,7 +17,7 @@ inhibit_rules:
 
 route:
   repeat_interval: 2m
-  group_by: ['alertname','user_id']
+  group_by: ['alertname','used_id']
   receiver: default
   group_wait: 60s
   group_interval: 60s

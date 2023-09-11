@@ -4,7 +4,7 @@ volumes:
   prometheus1_data: {}
   prometheus2_data: {}
   grafana_data: {}
-  prometheus-monitor-alert-data: {}
+  prometheus-monitor-alert-data-2: {}
 
 services:
 
@@ -52,7 +52,7 @@ services:
     container_name: prometheus-alert
     volumes:
       - ./prometheus-monitor-alert/:/etc/prometheus/
-      - prometheus-monitor-alert-data:/prometheus
+      - prometheus-monitor-alert-data-2:/prometheus
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
       - "--storage.tsdb.path=/prometheus"

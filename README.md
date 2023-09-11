@@ -3,7 +3,7 @@
 ## 1 . Dynamic configuration AM
 
 - chuẩn bị
-    - `image prom/prometheus` và `prom/alertmanager` image  nó sẽ là images đễ build một container Prometheus và AM
+    - `image prom/prometheus` và `prom/**alertmanager`** image  nó sẽ là images đễ build một container Prometheus và AM
     - `consul-template` dùng để cập nhật file config `prometheus.yml` đến contianer Prometheus
     - **`dumb-init**` giúp chạy tiển trình `consul-template` bên trong container, và sau đó sẽ chạy container sau khi đã cập nhật file
 
@@ -22,7 +22,7 @@ Trong thử nghiệm sau sẽ cần 2 loại file :
 
 ```jsx
 exec {
-  command       = "/bin/alertmanager --config.file=/etc/alertmanager/config.yml --web.listen-address=:9093 --log.level=info"
+  command       = "/bin/**alertmanager --**config.file=/etc/**alertmanager/config**.yml --web.listen-address=:9093 --log.level=info"
 
   reload_signal = "SIGHUP"
   kill_signal   = "SIGTERM"
@@ -30,8 +30,8 @@ exec {
 }
 
 template {
-  source      = "/etc/alertmanager/config.yml.ctpl"
-  destination = "/etc/alertmanager/config.yml"
+  source      = "/etc/**alertmanager/config**.yml.ctpl"
+  destination = "/etc/**alertmanager/config**.yml"
   perms       = 0640
 }
 
@@ -39,7 +39,7 @@ template {
 
 có 3 trường quan trọng cần lưu ý là `command`, `source`, `destination` 
 
-- `source`:  là đường dẫn đến template trong container. trong trường hợp đối với prometheus hay alermanager thì là đường dẫn đến file `config.yml.ctpl` ví dụ `/etc/alertmanager/config.yml.ctpl` file này đòng vai trò là mẫu (template) cho file cấu hình chính `config.yml.ctpl`
+- `source`:  là đường dẫn đến template trong container. trong trường hợp đối với prometheus hay alermanager thì là đường dẫn đến file `config.yml.ctpl` ví dụ `/etc/**alertmanager/config**.yml.ctpl` file này đòng vai trò là mẫu (template) cho file cấu hình chính `config.yml.ctpl`
 - `destination path` : là đường dẫn đến file cấu hình của prometheus, tức là đường dẫn đến file ``config.yml`` thực tế và sẽ được khởi tạo trong container
 - `command` : Đây là lệnh sẽ được thực hiện sau khi mà `consul-template` đã khởi tạo các file cấu hình thành công, lệnh này thường là lệnh khởi tạo cho prometheus như là : --`config.file=/etc/prometheus/prometheus.yml`
 
@@ -496,4 +496,191 @@ bây giờ các lệnh put sẽ là
 
 #### vấn đề 
 
-- do là protheus chỉ theo dõi là tin nhắn đã gửi đi như thế nào mà không phân biệt đâu là tin nhắn được gửi cho người dùng nào 
+- do là protheus chỉ theo dõi là tin nhắn đã gửi đi như thế nào mà không phân biệt đâu là tin nhắn được gửi cho người dùng nào
+
+
+
+
+- **alertmanager_alerts** How many alerts by state.
+- **alertmanager_alerts_invalid_total** The total number of received alerts that were invalid.** counter
+- **alertmanager_alerts_received_total** The total number of received alerts.** counter
+- **alertmanager_build_info** A metric with a constant '1' value labeled by version, revision, branch, and goversion from which alertmanager was built.
+- **alertmanager_cluster_alive_messages_total** Total number of received alive messages.
+- **alertmanager_cluster_enabled** Indicates whether the clustering is enabled or not.
+- **alertmanager_cluster_failed_peers** Number indicating the current number of failed peers in the cluster.
+- **alertmanager_cluster_health_score** Health score of the cluster. Lower values are better and zero means 'totally healthy'.
+- **alertmanager_cluster_members** Number indicating current number of members in cluster.
+
+- **alertmanager_cluster_messages_pruned_total** Total number of cluster messages pruned.
+
+- **alertmanager_cluster_messages_queued** Number of cluster messages which are queued.
+
+- **alertmanager_cluster_messages_received_size_total** Total size of cluster messages received.
+
+- **alertmanager_cluster_messages_received_total** Total number of cluster messages received.
+
+- **alertmanager_cluster_messages_sent_size_total** Total size of cluster messages sent.
+
+- **alertmanager_cluster_messages_sent_total** Total number of cluster messages sent.
+
+- **alertmanager_cluster_peer_info** A metric with a constant '1' value labeled by peer name.
+
+- **alertmanager_cluster_peers_joined_total** A counter of the number of peers that have joined.
+
+- **alertmanager_cluster_peers_left_total** A counter of the number of peers that have left.
+
+- **alertmanager_cluster_peers_update_total** A counter of the number of peers that have updated metadata.
+
+- **alertmanager_cluster_reconnections_failed_total** A counter of the number of failed cluster peer reconnection attempts.
+
+- **alertmanager_cluster_reconnections_total** A counter of the number of cluster peer reconnections.
+
+- **alertmanager_cluster_refresh_join_failed_total** A counter of the number of failed cluster peer joined attempts via refresh.
+
+- **alertmanager_cluster_refresh_join_total** A counter of the number of cluster peer joined via refresh.
+
+- **alertmanager_config_hash** Hash of the currently loaded **alertmanager configuration**.
+
+- **alertmanager_config_last_reload_success_timestamp_seconds** Timestamp of the last successful configuration reload.
+
+- **alertmanager_config_last_reload_successful** Whether the last configuration reload attempt was successful.
+
+- **alertmanager_dispatcher_aggregation_groups** Number of active aggregation groups
+
+- **alertmanager_dispatcher_alert_processing_duration_seconds** Summary of latencies for the processing of alerts.
+
+- **alertmanager_http_concurrency_limit_exceeded_total** Total number of times an HTTP request failed because the concurrency limit was reached.
+
+- **alertmanager_http_request_duration_seconds** Histogram of latencies for HTTP requests.
+
+- **alertmanager_http_requests_in_flight** Current number of HTTP requests being processed.
+
+- **alertmanager_http_response_size_bytes** Histogram of response size for HTTP requests.
+
+
+- **alertmanager_marked_alerts** How many alerts by state are currently marked in the **Alertmanager regardless** of their expiry.
+
+- **alertmanager_nflog_gc_duration_seconds** Duration of the last notification log garbage collection cycle.
+
+- **alertmanager_nflog_gossip_messages_propagated_total** Number of received gossip messages that have been further gossiped.
+
+- **alertmanager_nflog_queries_total** Number of notification log queries were received.
+
+- **alertmanager_nflog_query_duration_seconds** Duration of notification log query evaluation.
+
+- **alertmanager_nflog_query_errors_total** Number notification log received queries that failed.
+
+- **alertmanager_nflog_snapshot_duration_seconds** Duration of the last notification log snapshot.
+
+- **alertmanager_nflog_snapshot_size_bytes** Size of the last notification log snapshot in bytes.
+
+## metric về notification channel
+
+- **alertmanager_notification_latency_seconds** The latency of notifications in seconds.
+
+- **alertmanager_notification_requests_failed_total** The total number of failed notification requests.
+
+- **alertmanager_notification_requests_total** The total number of attempted notification requests.
+
+- **alertmanager_notifications_failed_total** The total number of failed notifications.
+
+- **alertmanager_notifications_total** The total number of attempted notifications.
+
+- **alertmanager_oversize_gossip_message_duration_seconds** Duration of oversized gossip message requests.
+
+- **alertmanager_oversized_gossip_message_dropped_total** Number of oversized gossip messages that were dropped due to a full message queue.
+
+- **alertmanager_oversized_gossip_message_failure_total** Number of oversized gossip message sends that failed.
+
+- **alertmanager_oversized_gossip_message_sent_total** Number of oversized gossip message sent.
+
+- **alertmanager_peer_position** Position the **Alertmanager instance** believes it's in. The position determines a peer's behavior in the cluster.
+
+- **alertmanager_receivers** Number of configured receivers.
+
+- **alertmanager_silences** How many silences by state.
+
+- **alertmanager_silences_gc_duration_seconds** Duration of the last silence garbage collection cycle.
+
+- **alertmanager_silences_gossip_messages_propagated_total** Number of received gossip messages that have been further gossiped.
+
+- **alertmanager_silences_queries_total** How many silence queries were received.
+
+- **alertmanager_silences_query_duration_seconds** Duration of silence query evaluation.
+
+- **alertmanager_silences_query_errors_total** How many silence received queries did not succeed.
+
+- **alertmanager_silences_snapshot_duration_seconds** Duration of the last silence snapshot.
+
+- **alertmanager_silences_snapshot_size_bytes** Size of the last silence snapshot in bytes.
+
+- **go_gc_duration_seconds** A summary of the pause duration of garbage collection cycles.
+
+- **go_goroutines** Number of goroutines that currently exist.
+
+- **go_info** Information about the Go environment.
+
+- **go_memstats_alloc_bytes** Number of bytes allocated and still in use.
+
+- **go_memstats_alloc_bytes_total** Total number of bytes allocated, even if freed.
+
+- **go_memstats_buck_hash_sys_bytes** Number of bytes used by the profiling bucket hash table.
+
+- **go_memstats_frees_total** Total number of frees.
+
+- **go_memstats_gc_sys_bytes** Number of bytes used for garbage collection system metadata.
+
+- **go_memstats_heap_alloc_bytes** Number of heap bytes allocated and still in use.
+
+- **go_memstats_heap_idle_bytes** Number of heap bytes waiting to be used.
+
+- **go_memstats_heap_inuse_bytes** Number of heap bytes that are in use.
+
+- **go_memstats_heap_objects** Number of allocated objects.
+
+- **go_memstats_heap_released_bytes** Number of heap bytes released to OS.
+
+- **go_memstats_heap_sys_bytes** Number of heap bytes obtained from system.
+
+- **go_memstats_last_gc_time_seconds** Number of seconds since 1970 of last garbage collection.
+
+- **go_memstats_lookups_total** Total number of pointer lookups.
+
+- **go_memstats_mallocs_total** Total number of mallocs.
+
+- **go_memstats_mcache_inuse_bytes** Number of bytes in use by mcache structures.
+
+- **go_memstats_mcache_sys_bytes** Number of bytes used for mcache structures obtained from system.
+
+- **go_memstats_mspan_inuse_bytes** Number of bytes in use by mspan structures.
+
+- **go_memstats_mspan_sys_bytes** Number of bytes used for mspan structures obtained from system.
+
+- **go_memstats_next_gc_bytes** Number of heap bytes when next garbage collection will take place.
+
+- **go_memstats_other_sys_bytes** Number of bytes used for other system allocations.
+
+- **go_memstats_stack_inuse_bytes** Number of bytes in use by the stack allocator.
+
+- **go_memstats_stack_sys_bytes** Number of bytes obtained from system for stack allocator.
+
+- **go_memstats_sys_bytes** Number of bytes obtained from system.
+
+- **go_threads** Number of OS threads created.
+
+- **net_conntrack_dialer_conn_attempted_total** Total number of connections attempted by the given dialer a given name.
+
+- **net_conntrack_dialer_conn_closed_total** Total number of connections closed which originated from the dialer of a given name.
+
+- **net_conntrack_dialer_conn_established_total** Total number of connections successfully established by the given dialer a given name.
+
+- **net_conntrack_dialer_conn_failed_total** Total number of connections failed to dial by the dialer a given name.
+
+- **process_cpu_seconds_total** Total process
+
+- **process_virtual_memory_max_bytes** Maximum amount of virtual memory available in bytes.
+
+- **promhttp_metric_handler_requests_in_flight** Current number of scrapes being served.
+
+- **promhttp_metric_handler_requests_total** Total number of scrapes by HTTP status code.
+
