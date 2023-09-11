@@ -14,6 +14,8 @@ scrape_configs:
 
   - job_name: 'alertmanager'
     static_configs:
-    - targets: [
-      'localhost:9093',
-    ]
+    - targets: ['localhost:9093',]
+    metric_relabel_configs:
+      - source_labels: ['alertname', 'user_id']
+        separator: '_'
+        target_label: 'alertname_user_id'
