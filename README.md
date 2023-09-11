@@ -488,9 +488,12 @@ bây giờ các lệnh put sẽ là
 
 - Một con Prometheus sẽ làm nhiệm vụ thu thập các metric từ alertmanager 
 - Bằng việc thu thập metric từ alertmanager từ đó metering được số tin nhắn đã được gửi thành công hay thất bại 
-- Lưu các dữ liệu người dùng này vào một file ``.csv`` để có thể billing, file ``.csv``
+- Lưu các dữ liệu người dùng này vào một file ``.csv`` để có thể billing, file ``.csv`` vào sau khi người dùng thanh toán file này sẽ bị reset.
 
 <div align="center">
   <img src="assets/pic_11.png">
 </div>
 
+#### vấn đề 
+
+- do là protheus chỉ theo dõi là tin nhắn đã gửi đi như thế nào mà không phân biệt đâu là tin nhắn được gửi cho người dùng nào 
