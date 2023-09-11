@@ -500,11 +500,15 @@ bây giờ các lệnh put sẽ là
 
 
 
+## Alertmanager_alerts
 
 - **alertmanager_alerts** How many alerts by state.
 - **alertmanager_alerts_invalid_total** The total number of received alerts that were invalid.** counter
 - **alertmanager_alerts_received_total** The total number of received alerts.** counter
 - **alertmanager_build_info** A metric with a constant '1' value labeled by version, revision, branch, and goversion from which alertmanager was built.
+
+## alertmanager_cluster
+
 - **alertmanager_cluster_alive_messages_total** Total number of received alive messages.
 - **alertmanager_cluster_enabled** Indicates whether the clustering is enabled or not.
 - **alertmanager_cluster_failed_peers** Number indicating the current number of failed peers in the cluster.
@@ -538,6 +542,8 @@ bây giờ các lệnh put sẽ là
 - **alertmanager_cluster_refresh_join_failed_total** A counter of the number of failed cluster peer joined attempts via refresh.
 
 - **alertmanager_cluster_refresh_join_total** A counter of the number of cluster peer joined via refresh.
+
+## alertmanager_config
 
 - **alertmanager_config_hash** Hash of the currently loaded **alertmanager configuration**.
 
@@ -614,6 +620,8 @@ bây giờ các lệnh put sẽ là
 
 - **alertmanager_silences_snapshot_size_bytes** Size of the last silence snapshot in bytes.
 
+## GO
+
 - **go_gc_duration_seconds** A summary of the pause duration of garbage collection cycles.
 
 - **go_goroutines** Number of goroutines that currently exist.
@@ -667,6 +675,8 @@ bây giờ các lệnh put sẽ là
 - **go_memstats_sys_bytes** Number of bytes obtained from system.
 
 - **go_threads** Number of OS threads created.
+
+## net and process
 
 - **net_conntrack_dialer_conn_attempted_total** Total number of connections attempted by the given dialer a given name.
 
