@@ -16,11 +16,11 @@ inhibit_rules:
   equal: ["alertname", "instance"]
 
 route:
-  repeat_interval: 2h
-  group_by: ['alertname']
+  repeat_interval: 2m
+  group_by: ['alertname','user_id']
   receiver: default
   group_wait: 60s
-  group_interval: 5m
+  group_interval: 60s
 
   routes:
 {{ range $user_id, $pairs := tree "users/" | explode }}
@@ -29,7 +29,8 @@ route:
   - match:
       user_id: {{ $user_id }}
     receiver: '{{ $user_id }} - {{ $alarm_type }} - {{ $alarm_id }}'
-    repeat_interval: 1h
+    repeat_interval: 1m
+    continue: true
     {{ end }}
   {{ end }}
 {{ end }}
@@ -47,11 +48,11 @@ receivers:
       - to: '{{ range ls ($alarm_id | printf "users/%s/alarms/email/%s" $user_id ) -}}{{if eq .Key "receiver"}}{{ scratch.Set .Key .Value }}{{end}}{{end}}{{scratch.Get "receiver"}}'
         send_resolved: true
         text: "CommonAnnotations.description "
-        tls_config:
-          insecure_skip_verify: true
-        # html: '{{ `{{ template "email.viettel.html" . }}` }}'
-        headers:
-          subject: "CMP Alert"
+        from: 'goldf55f@gmail.com'
+        smarthost: 'smtp.gmail.com:587'
+        auth_username: 'goldf55f@gmail.com'
+        auth_password: 'cbpamuevasnbbnrb'
+
 
         {{ else if eq $alarm_type "slack"}}
         

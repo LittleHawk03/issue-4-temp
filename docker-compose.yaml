@@ -4,6 +4,7 @@ volumes:
   prometheus1_data: {}
   prometheus2_data: {}
   grafana_data: {}
+  prometheus-monitor-alert-data: {}
 
 services:
 
@@ -44,8 +45,21 @@ services:
       - "--web.listen-address=:9091"
     restart: unless-stopped
     network_mode: host
-    
 
+
+  prometheus-alert:
+    image: prom/prometheus:v2.43.0
+    container_name: prometheus-alert
+    volumes:
+      - ./prometheus-monitor-alert/:/etc/prometheus/
+      - prometheus-monitor-alert-data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.listen-address=:9092"
+    restart: unless-stopped
+    network_mode: host
+    
 
   alertmanager1:
     build:

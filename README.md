@@ -472,12 +472,25 @@ bây giờ các lệnh put sẽ là
   # sms
   consul kv put /users/user_id/alarms/email/alarm_id/
 
-
-
-
 ```
 
 
-```
+## Metering notification channel
 
-```
+#### Mô hình như sau :
+
+<div align="center">
+  <img src="assets/pic_10.png">
+</div>
+
+
+#### Flow thực hiện như sau 
+
+- Một con Prometheus sẽ làm nhiệm vụ thu thập các metric từ alertmanager 
+- Bằng việc thu thập metric từ alertmanager từ đó metering được số tin nhắn đã được gửi thành công hay thất bại 
+- Lưu các dữ liệu người dùng này vào một file ``.csv`` để có thể billing, file ``.csv``
+
+<div align="center">
+  <img src="assets/pic_11.png">
+</div>
+
