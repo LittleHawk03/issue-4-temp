@@ -1,0 +1,50 @@
+---
+- name: copy alertmanager config to server
+  copy:
+    src: /home/honahl/Documents/consul-template/alertmanager/
+    dest: /home/monitor/alertmanager/
+
+- name: copy prometheus1 to server
+  copy:
+    src: ~/Documents/consul-template/prometheus1/
+    dest: /home/monitor/prometheus1/
+
+- name: copy prometheus2 to server
+  copy:
+    src: ~/Documents/consul-template/prometheus2/
+    dest: /home/monitor/prometheus2/
+
+- name: copy prometheus-monitor-alert to server
+  copy:
+    src: ~/Documents/consul-template/prometheus-monitor-alert/
+    dest: /home/monitor/prometheus-monitor-alert/
+
+- name: copy alertmanager config to server
+  copy:
+    src: ~/Documents/consul-template/config.hcl
+    dest: /home/monitor/
+
+- name: copy alertmanager config to server
+  copy:
+    src: ~/Documents/consul-template/config2.hcl
+    dest: /home/monitor/
+
+- name: copy alertmanager config to server
+  copy:
+    src: ~/Documents/consul-template/docker-compose.yaml
+    dest: /home/monitor/
+
+- name: copy alertmanager config to server
+  copy:
+    src: ~/Documents/consul-template/Dockerfile
+    dest: /home/monitor/
+
+- name: copy alertmanager config to server
+  copy:
+    src: ~/Documents/consul-template/Dockerfile2
+    dest: /home/monitor/
+
+- name:  run docker-compose for monitor
+  docker_compose: 
+    project_src: /home/monitor/
+    state: present

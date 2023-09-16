@@ -1,0 +1,7 @@
+---
+- name: setup database
+  hosts: vps1
+  become: true
+  gather_facts: false
+  roles:
+    - deploy_prom_alert

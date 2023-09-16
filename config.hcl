@@ -3,7 +3,7 @@ consul{
 }
 
 exec {
-  command       = "/bin/alertmanager --config.file=/etc/alertmanager/config.yml --web.listen-address=:9093 --log.level=info"
+  command       = "/bin/alertmanager --config.file=/etc/alertmanager/config.yml --web.listen-address=0.0.0.0:9093 --cluster.listen-address=0.0.0.0:9095 --cluster.peer=0.0.0.0:9096 --log.level=info"
   reload_signal = "SIGHUP"
   kill_signal   = "SIGTERM"
   kill_timeout  = "15s"

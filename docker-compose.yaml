@@ -1,93 +1,113 @@
 version: "3.0"
 
 volumes:
-  prometheus1_data: {}
-  prometheus2_data: {}
-  grafana_data: {}
-  prometheus-monitor-alert-data-2: {}
+ prometheus1_data: {}
+ prometheus2_data: {}
+ grafana_data: {}
+ prometheus-monitor-alert-data-2: {}
 
 services:
 
-  sms:
-    image: promtotwilio:latest
-    environment:
-      - SID=AC573b376f2fff71a0c0a45fb06c1c6f08
-      - TOKEN=150d3486bea757caaf8e7dc04c2d3f53
-      - RECEIVER=+84349354228
-      - SENDER=+12178058972
-    restart: unless-stopped
-    network_mode: host
+ sms:
+  image: promtotwilio:latest
+  environment:
+    - SID=AC4fdc644445e0afcf1fc3312e2af853af
+    - TOKEN=26291d7df2b8c6698b255a3f09cc3795
+    - SENDER=+12512377967
+  restart: unless-stopped
+  network_mode: host
   
 
-  prometheus1:
-    image: prom/prometheus:v2.43.0
-    container_name: prometheus1
-    volumes:
-      - ./prometheus1/:/etc/prometheus/
-      - prometheus1_data:/prometheus
-    command:
-      - "--config.file=/etc/prometheus/prometheus.yml"
-      - "--storage.tsdb.path=/prometheus"
-      - "--web.listen-address=:9090"
-    restart: unless-stopped
-    network_mode: host
+ prometheus1:
+  image: prom/prometheus:v2.43.0
+  container_name: prometheus1
+  volumes:
+    - ./prometheus1/:/etc/prometheus/
+    - prometheus1_data:/prometheus
+  command:
+    - "--config.file=/etc/prometheus/prometheus.yml"
+    - "--storage.tsdb.path=/prometheus"
+    - "--web.listen-address=:9090"
+  restart: unless-stopped
+  network_mode: host
    
 
-  prometheus2:
-    image: prom/prometheus:v2.43.0
-    container_name: prometheus2
-    volumes:
-      - ./prometheus2/:/etc/prometheus/
-      - prometheus2_data:/prometheus
-    command:
-      - "--config.file=/etc/prometheus/prometheus.yml"
-      - "--storage.tsdb.path=/prometheus"
-      - "--web.listen-address=:9091"
-    restart: unless-stopped
-    network_mode: host
+ prometheus2:
+  image: prom/prometheus:v2.43.0
+  container_name: prometheus2
+  volumes:
+    - ./prometheus2/:/etc/prometheus/
+    - prometheus2_data:/prometheus
+  command:
+    - "--config.file=/etc/prometheus/prometheus.yml"
+    - "--storage.tsdb.path=/prometheus"
+    - "--web.listen-address=:9091"
+  restart: unless-stopped
+  network_mode: host
 
 
-  prometheus-alert:
-    image: prom/prometheus:v2.43.0
-    container_name: prometheus-alert
-    volumes:
-      - ./prometheus-monitor-alert/:/etc/prometheus/
-      - prometheus-monitor-alert-data-2:/prometheus
-    command:
-      - "--config.file=/etc/prometheus/prometheus.yml"
-      - "--storage.tsdb.path=/prometheus"
-      - "--web.listen-address=:9092"
-    restart: unless-stopped
-    network_mode: host
+#  prometheus-alert:
+#   image: prom/prometheus:v2.43.0
+#   container_name: prometheus-alert
+#   volumes:
+#     - ./prometheus-monitor-alert/:/etc/prometheus/
+#     - prometheus-monitor-alert-data-2:/prometheus
+#   command:
+#     - "--config.file=/etc/prometheus/prometheus.yml"
+#     - "--storage.tsdb.path=/prometheus"
+#     - "--web.listen-address=:9092"
+#   restart: unless-stopped
+#   network_mode: host
     
 
-  alertmanager1:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: alertmanager1
-    restart: unless-stopped
-    environment:
-      - INCOMMING_WEBHOOK=https://hooks.slack.com/services/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
-      - TELE_WEBHOOK=https://telepush.dev/api/inlets/alertmanager/008a95
-      - EMAIL_FIELD=manhduc030402@gmail.com
-    network_mode: host
-
-    depends_on:
-      - sms
+ alertmanager1:
+  build:
+    context: .
+    dockerfile: Dockerfile
+  container_name: alertmanager1
+  restart: unless-stopped
+  network_mode: host
+   # depends_on:
+   #   - sms
     
+ alertmanager2:
+  build:
+    context: .
+    dockerfile: Dockerfile2
+  container_name: alertmanager2
+  restart: unless-stopped
+  network_mode: host
+   # depends_on:
+   #   - sms
 
-  nodeexporter:
-    image: prom/node-exporter:v1.5.0
-    container_name: nodeexporter
-    restart: unless-stopped
-    network_mode: host
+
+ nodeexporter:
+  image: prom/node-exporter:v1.5.0
+  container_name: nodeexporter
+  volumes:
+    - /proc:/host/proc:ro
+    - /sys:/host/sys:ro
+    - /:/rootfs:ro
+  command:
+    - "--path.procfs=/host/proc"
+    - "--path.rootfs=/rootfs"
+    - "--path.sysfs=/host/sys"
+    - "--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)"
+  restart: unless-stopped
+  network_mode: host
    
 
-  cadvisor:
-    image: gcr.io/cadvisor/cadvisor:v0.47.1
-    container_name: cadvisor
-    privileged: true
-    restart: unless-stopped
-    network_mode: host
-    
+ cadvisor:
+  image: gcr.io/cadvisor/cadvisor:v0.47.1
+  container_name: cadvisor
+  privileged: true
+  devices:
+    - /dev/kmsg:/dev/kmsg
+  volumes:
+    - /:/rootfs:ro
+    - /var/run:/var/run:ro
+    - /sys:/sys:ro
+    - /var/lib/docker:/var/lib/docker:ro
+  restart: unless-stopped
+  network_mode: host
+   

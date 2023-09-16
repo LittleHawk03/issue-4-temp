@@ -1,12 +1,9 @@
-
+consul{
+  address = "116.103.226.93:8500"
+}
 
 exec {
-  command       = "/bin/alertmanager \
-                    --config.file=/etc/alertmanager/config.yml \
-                    --web.listen-address=:9094 \
-                    --cluster.listen-address=:9096 \
-                    --cluster.peer=localhost:9095 \
-                    --log.level=info"
+  command       = "/bin/alertmanager --config.file=/etc/alertmanager/config.yml --web.listen-address=0.0.0.0:9094 --cluster.listen-address=0.0.0.0:9096 --cluster.peer=0.0.0.0:9095 --log.level=info"
                     
   reload_signal = "SIGHUP"
   kill_signal   = "SIGTERM"

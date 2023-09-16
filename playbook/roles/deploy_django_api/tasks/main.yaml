@@ -1,0 +1,10 @@
+---
+- name: copy docker-compose file to server
+  copy:
+    src: docker-compose.yml
+    dest: /home/api
+
+- name: run docker-compose file
+  docker_compose: 
+    project_src: /home/api
+    state: present

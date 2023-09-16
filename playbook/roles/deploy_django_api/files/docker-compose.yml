@@ -1,0 +1,39 @@
+version: "3.0"
+ 
+
+services:
+
+ consul:
+  image: consul:1.15.4
+  container_name: badger
+  command: ["agent", "-server", "-ui", "-node=server-1", "-bootstrap-expect=1", "-client=0.0.0.0"]
+  ports:
+    - "8500:8500"
+    - "8600:8600/udp"
+  restart: unless-stopped
+  
+ postgres_db:
+  image: postgres:15.4-alpine3.18
+  container_name: db
+  restart: unless-stopped
+  environment:
+    - POSTGRES_DB=notification_channel
+    - POSTGRES_PASSWORD=123456a@
+    - POSTGRES_USER=notification_user
+  network_mode: host
+
+ api: 
+  image: littlehawk03/naas-api:v1.5.0
+  container_name: api
+  command: >
+      sh -c "python manage.py makemigrations 
+      && python manage.py migrate
+      && python manage.py runserver 0.0.0.0:8000"
+  restart: unless-stopped
+  depends_on:
+    - postgres_db
+  network_mode: host
+  
+
+  
+    

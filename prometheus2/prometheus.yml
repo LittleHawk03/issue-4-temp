@@ -13,7 +13,7 @@ alerting:
     static_configs:
     - targets: 
       - 'localhost:9093'
-      # - 'localhost:9094'
+      - 'localhost:9094'
 
 # Load and evaluate rules in this file every 'evaluation_interval' seconds.
 rule_files:
@@ -44,8 +44,8 @@ scrape_configs:
       'localhost:8080',
     ]
   
-  - job_name: 'alertmanager'
-    static_configs:
-    - targets: [
-      'localhost:9093',
-    ]
+  # - job_name: 'alertmanager'
+  #   static_configs:
+  #   - targets: [
+  #     'localhost:9093',
+  #   ]
