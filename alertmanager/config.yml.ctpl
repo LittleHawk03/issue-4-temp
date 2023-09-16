@@ -38,6 +38,8 @@ route:
 receivers:
   - name: default
 
+  - name: "1 - sms - 1"
+
 {{ range $user_id, $pairs := tree "users/" | explode }}
   {{ range $alarm_type, $pairs := tree ($user_id | printf "users/%s/alarms/") | explode}}
     {{ range $alarm_id , $pairs := tree ($alarm_type | printf "users/%s/alarms/%s/" $user_id) | explode}}
@@ -71,17 +73,17 @@ receivers:
       - url: '{{ range ls ($alarm_id | printf "users/%s/alarms/telegram/%s" $user_id ) -}}{{if eq .Key "tele_webhook"}}{{ scratch.Set .Key .Value }}{{end}}{{end}}{{scratch.Get "tele_webhook"}}'
         http_config:
 
-        {{ else if $alarm_type "webhook" }}
+        {{ else if eq $alarm_type "webhook" }}
 
   - name: '{{ $user_id }} - {{ $alarm_type }} - {{ $alarm_id }}'
     webhook_configs:
       - url: '{{ range ls ($alarm_id | printf "users/%s/alarms/webhook/%s" $user_id ) -}}{{if eq .Key "url"}}{{ scratch.Set .Key .Value }}{{end}}{{end}}{{scratch.Get "url"}}'
         http_config:
 
-        {{ else if $alarm_type "sms" }}
+        {{ else if eq $alarm_type "sms" }}
+  - name: '{{ $user_id }} - {{ range ls ($alarm_id | printf "users/%s/alarms/sms/%s" $user_id ) -}}{{if eq .Key "sms_field"}}{{ scratch.Set .Key .Value }}{{end}}{{end}}{{scratch.Get "url"}} - {{ $alarm_id }}'
+   
 
-  - name : '{{ $user_id }} - {{ $alarm_type }} - {{ $alarm_id }}'
-  
         {{ end }}
     {{ end }}
   {{ end }}
