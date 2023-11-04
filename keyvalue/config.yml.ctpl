@@ -36,13 +36,24 @@ receivers:
       - url: '{{ key "alertmanager/config/webhook/url/" }}'
         http_config:
 
+
+
+
   - name: "slack"
     slack_configs:
       - send_resolved: true
         text: "{{ .CommonAnnotations.description }}"
-        username: "Prometheus"
-        channel: "{{ key "alertmanager/config/slack/channel" }}"
-        api_url: "{{ key "alertmanager/config/slack/api_url" }}"
+        username: S"{{ key "users/1/alarms/slack/1/username" }}"
+        channel: "{{ key "users/1/alarms/slack/1/channel" }}"
+        api_url: "{{ key "users/1/alarms/slack/1/api_url" }}"
+
+
+    users/1/alarms/slack/1/username "alertmanager"
+    users/1/alarms/slack/1/channel "#test"
+    users/1/alarms/slack/1/api_url "http://hook.slack.com/......"
+
+
+
 
   - name: "telegram"
     webhook_configs:

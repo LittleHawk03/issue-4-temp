@@ -38,7 +38,7 @@ route:
 receivers:
   - name: default
 
-  - name: "1 - sms - 1"
+
 
 {{ range $user_id, $pairs := tree "users/" | explode }}
   {{ range $alarm_type, $pairs := tree ($user_id | printf "users/%s/alarms/") | explode}}
@@ -81,8 +81,9 @@ receivers:
         http_config:
 
         {{ else if eq $alarm_type "sms" }}
-  - name: '{{ $user_id }} - {{ range ls ($alarm_id | printf "users/%s/alarms/sms/%s" $user_id ) -}}{{if eq .Key "sms_field"}}{{ scratch.Set .Key .Value }}{{end}}{{end}}{{scratch.Get "url"}} - {{ $alarm_id }}'
-   
+  - name: '{{ $user_id }} - {{ $alarm_type }} - {{ $alarm_id }}'
+    webhook_configs: 
+      - url: 'http://0.0.0.0:9089/send?receiver=%2B84{{ range ls ($alarm_id | printf "users/%s/alarms/sms/%s" $user_id ) -}}{{if eq .Key "sms_field"}}{{ scratch.Set .Key .Value }}{{end}}{{end}}{{scratch.Get "sms_field"}}'
 
         {{ end }}
     {{ end }}

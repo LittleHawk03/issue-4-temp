@@ -1,0 +1,7 @@
+---
+all:
+  hosts:
+    vps1:
+      ansible_host: 11
+      ansible_user: root
+      ansible_password: Hy0!Y*Qkbu

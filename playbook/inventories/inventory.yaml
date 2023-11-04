@@ -2,6 +2,6 @@
 all:
   hosts:
     vps1:
-      ansible_host: 116.103.226.93
+      ansible_host: 192.168.89.105
       ansible_user: root
-      ansible_password: Hy0!Y*Qkbu
+      ansible_password: 1

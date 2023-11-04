@@ -12,7 +12,7 @@ COPY --from=consul-template1 /consul-template /bin/consul-template
 # Copy consul-template configuration
 COPY ./config.hcl /consul-template/config.hcl
 
-# Copy Prometheus configuration file template
+# Copy alertmanager configuration file template
 COPY ./alertmanager/config.yml.ctpl /etc/alertmanager/config.yml.ctpl
 
 ENTRYPOINT ["/home/dumb-init", "--"]

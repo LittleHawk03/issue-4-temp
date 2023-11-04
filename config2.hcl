@@ -1,5 +1,5 @@
 consul{
-  address = "116.103.226.93:8500"
+  address = "0.0.0.0:8500"
 }
 
 exec {

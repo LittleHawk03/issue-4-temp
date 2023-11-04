@@ -8,11 +8,42 @@ volumes:
 
 services:
 
+ consul:
+  image: consul:1.15.4
+  container_name: badger
+  command: ["agent", "-server", "-ui", "-node=server-1", "-bootstrap-expect=1", "-client=0.0.0.0"]
+  ports:
+    - "8500:8500"
+    - "8600:8600/udp"
+  restart: unless-stopped
+
+ postgres_db:
+  image: postgres:15.4-alpine3.18
+  container_name: db
+  restart: unless-stopped
+  environment:
+    - POSTGRES_DB=notification_channel
+    - POSTGRES_PASSWORD=123456a@
+    - POSTGRES_USER=notification_user
+  network_mode: host
+
+ api: 
+  image: littlehawk03/naas-api:v1.8.0
+  container_name: api
+  command: >
+      sh -c "python manage.py makemigrations 
+      && python manage.py migrate
+      && python manage.py runserver 0.0.0.0:8000"
+  restart: unless-stopped
+  depends_on:
+    - postgres_db
+  network_mode: host
+
  sms:
   image: promtotwilio:latest
   environment:
     - SID=AC4fdc644445e0afcf1fc3312e2af853af
-    - TOKEN=26291d7df2b8c6698b255a3f09cc3795
+    - TOKEN=986650514f3bca2f15a6fe1bef3b0923
     - SENDER=+12512377967
   restart: unless-stopped
   network_mode: host
